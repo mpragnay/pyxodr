@@ -137,7 +137,6 @@ class RoadNetwork:
         iterator = self.root.findall("road")
         for road_xml in track(iterator) if verbose else iterator:
             road_id = road_xml.attrib["id"]
-            
             if road_id in ids_to_avoid:
                 continue
             if road_id in self.road_ids_to_object.keys():
