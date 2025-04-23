@@ -137,14 +137,17 @@ class RoadNetwork:
         iterator = self.root.findall("road")
         for road_xml in track(iterator) if verbose else iterator:
             road_id = road_xml.attrib["id"]
+            
             if road_id in ids_to_avoid:
                 continue
             if road_id in self.road_ids_to_object.keys():
                 roads.append(self.road_ids_to_object[road_id])
             else:
+                length = float(road_xml.attrib["length"])
+                resolution = min(0.5 * length, self.resolution)
                 road = Road(
                     road_xml,
-                    resolution=self.resolution,
+                    resolution=resolution,
                     ignored_lane_types=self.ignored_lane_types,
                 )
                 self.road_ids_to_object[road.id] = road
