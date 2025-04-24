@@ -226,7 +226,7 @@ class RoadNetwork:
                                 line_scale_factor=line_scale_factor,
                                 label_size=label_size,
                             )
-                except ValueError as e:
+                except (ValueError, IndexError) as e:
                     print(f"WARNING: Could not plot lane centers for {road}. {e}")
 
         # Visualise junctions
