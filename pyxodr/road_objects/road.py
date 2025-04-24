@@ -237,7 +237,7 @@ class Road:
             np.float64
         )
         stacked_coordinates = interpolate_path(
-            stacked_coordinates, resolution=self.resolution
+            stacked_coordinates, resolution=min(self.resolution, 0.5 * length)
         )
 
         return stacked_coordinates
@@ -417,7 +417,10 @@ class Road:
                 )
 
         for lane_section in self.lane_sections:
-            lane_section._link_lanes()
+            try:
+                lane_section._link_lanes()
+            except:
+                print(self)
 
     def __partition_lane_offset_line_into_lane_sections(
         self,
