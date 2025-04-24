@@ -582,7 +582,11 @@ class Road:
             Axis with the road plotted on it.
         """
         # Plot the road reference line.
-        global_coords = self.reference_line
+        try:
+            global_coords = self.reference_line
+        except ValueError as e:
+            print(f"WARNING: Could not plot {self}. {e}")
+            return axis
         global_coords_len = len(global_coords)
         axis.plot(*global_coords.T, linewidth=0.05 * line_scale_factor)
         if label_size is not None:
@@ -633,5 +637,6 @@ class Road:
             label=f"{self}",
             linewidth=0.2 * line_scale_factor,
         )
+        axis.set_aspect('equal')
 
         return axis

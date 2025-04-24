@@ -436,20 +436,23 @@ class Lane:
             )
 
         # And always plot lane connections
-        for successor_lane in self.traffic_flow_successors:
-            origin_coordinate = lane_traffic_flow_line[-1]
-            # Skip 0 as they may be on top of each other
-            arrow_difference_vector = (
-                successor_lane.traffic_flow_line[1, :2] - origin_coordinate
-            )
-            axis.arrow(
-                *origin_coordinate,
-                *arrow_difference_vector,
-                shape="full",
-                lw=0.5,
-                length_includes_head=True,
-                head_width=0.5,
-                color="red",
-            )
+        try:
+            for successor_lane in self.traffic_flow_successors:
+                origin_coordinate = lane_traffic_flow_line[-1]
+                # Skip 0 as they may be on top of each other
+                arrow_difference_vector = (
+                    successor_lane.traffic_flow_line[1, :2] - origin_coordinate
+                )
+                axis.arrow(
+                    *origin_coordinate,
+                    *arrow_difference_vector,
+                    shape="full",
+                    lw=0.5,
+                    length_includes_head=True,
+                    head_width=0.5,
+                    color="red",
+                )
+        except ValueError as e:
+            print(f"WARNING: Could not plot all lane connections for {self}. {e}")
 
         return axis

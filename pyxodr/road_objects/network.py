@@ -119,8 +119,11 @@ class RoadNetwork:
                         succ_dict["contactPoint"]
                     ),
                 )
-
-            road._link_lane_sections()
+            try:
+                road._link_lane_sections()
+            except ValueError as e:
+                print(f"WARNING: Could not link all lane sections of {road}. {e}"
+            )
 
     @lru_cache(maxsize=None)
     def get_roads(
@@ -214,14 +217,17 @@ class RoadNetwork:
             )
 
             if plot_lane_centres:
-                for lane_section in road.lane_sections:
-                    for lane in lane_section.lanes:
-                        axis = lane.plot(
-                            axis,
-                            plot_start_and_end=plot_start_and_end,
-                            line_scale_factor=line_scale_factor,
-                            label_size=label_size,
-                        )
+                try:
+                    for lane_section in road.lane_sections:
+                        for lane in lane_section.lanes:
+                            axis = lane.plot(
+                                axis,
+                                plot_start_and_end=plot_start_and_end,
+                                line_scale_factor=line_scale_factor,
+                                label_size=label_size,
+                            )
+                except ValueError as e:
+                    print(f"WARNING: Could not plot lane centers for {road}. {e}")
 
         # Visualise junctions
         if plot_junctions:
