@@ -57,11 +57,6 @@ class Arc(Geometry):
         direction_vector = np.array([u[1], v[1]]) - np.array([u[0], v[0]])
         direction_vector = direction_vector / np.linalg.norm(direction_vector)
         if np.linalg.norm(direction_vector - np.array([1.0, 0.0])) > 0.1:
-            import matplotlib.pyplot as plt
-
-            plt.figure(figsize=(20, 20))
-            plt.plot(u, v)
-            plt.savefig("arc_error.pdf")
             raise ValueError(
                 f"Arc seems to be going in wrong direction (vector {direction_vector})."
             )
