@@ -122,8 +122,7 @@ class RoadNetwork:
             try:
                 road._link_lane_sections()
             except ValueError as e:
-                print(f"WARNING: Could not link all lane sections of {road}. {e}"
-            )
+                print(f"WARNING: Could not link all lane sections of {road}. {e}")
 
     @lru_cache(maxsize=None)
     def get_roads(
