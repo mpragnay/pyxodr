@@ -419,8 +419,8 @@ class Road:
         for lane_section in self.lane_sections:
             try:
                 lane_section._link_lanes()
-            except:
-                print(self)
+            except Exception:
+                print(f"WARNING: Failed to link lanes in {self}.")
 
     def __partition_lane_offset_line_into_lane_sections(
         self,
@@ -637,6 +637,6 @@ class Road:
             label=f"{self}",
             linewidth=0.2 * line_scale_factor,
         )
-        axis.set_aspect('equal')
+        axis.set_aspect("equal")
 
         return axis
