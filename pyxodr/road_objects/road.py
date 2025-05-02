@@ -16,12 +16,21 @@ from pyxodr.utils.curved_text import CurvedText
 
 @dataclass
 class RoadProperties:
-    """Class for grouping road properties from xodr."""
+    """Dataclass for grouping road properties from xodr.
+
+    Parameters
+    ----------
+    name : str
+        Road name.
+    length : float, optional
+        Total length of the road in metres.
+    max_speed : float, optional
+        Speed limit for the road in metres/second.
+    """
 
     name: str = "Road"
     length: Optional[float] = None
     max_speed: Optional[float] = None
-    # geotype?
 
 
 class Road:
