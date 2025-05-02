@@ -17,10 +17,12 @@ from pyxodr.utils.curved_text import CurvedText
 @dataclass
 class RoadProperties:
     """Class for grouping road properties from xodr."""
+
     name: str = "Road"
     length: Optional[float] = None
     max_speed: Optional[float] = None
     # geotype?
+
 
 class Road:
     """
@@ -45,12 +47,12 @@ class Road:
         road_xml: etree._Element,
         resolution: float = 0.1,
         ignored_lane_types: Optional[Set[str]] = None,
-        road_properties: Optional[RoadProperties] = None
+        road_properties: Optional[RoadProperties] = None,
     ):
         self.road_xml = road_xml
         self.resolution = resolution
         self.road_properties = road_properties
-        
+
         self.ignored_lane_types = (
             set([]) if ignored_lane_types is None else ignored_lane_types
         )
