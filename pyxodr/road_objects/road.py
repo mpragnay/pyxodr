@@ -1,5 +1,5 @@
-from typing import Dict, List, Optional, Set, Tuple
 from dataclasses import dataclass
+from typing import Dict, List, Optional, Set, Tuple
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -16,7 +16,8 @@ from pyxodr.utils.curved_text import CurvedText
 
 @dataclass
 class RoadProperties:
-    """Dataclass for grouping road properties from xodr.
+    """
+    Dataclass for grouping road properties from xodr.
 
     Parameters
     ----------
@@ -574,6 +575,7 @@ class Road:
 
     @cached_property
     def road_properties(self) -> RoadProperties:
+        """Return all the existing road properties for this road."""
         road_xml = self.road_xml
         length = float(road_xml.attrib["length"])
         name = road_xml.attrib["name"]
