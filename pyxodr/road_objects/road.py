@@ -1,4 +1,5 @@
 from typing import Dict, List, Optional, Set, Tuple
+from dataclasses import dataclass
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -12,6 +13,14 @@ from pyxodr.utils import cached_property
 from pyxodr.utils.array import interpolate_path
 from pyxodr.utils.curved_text import CurvedText
 
+
+@dataclass
+class RoadProperties:
+    """Class for grouping road properties from xodr."""
+    name: str = "Road"
+    length: Optional[float] = None
+    max_speed: Optional[float] = None
+    # geotype?
 
 class Road:
     """
@@ -27,20 +36,20 @@ class Road:
     ignored_lane_types : Set[str], optional
         A set of lane types that should not be read from the OpenDRIVE file. If
         unspecified, no types are ignored.
+    road_properties : RoadProperties, optional
+        Collection of road properties.
     """
 
     def __init__(
         self,
         road_xml: etree._Element,
         resolution: float = 0.1,
-        name: str = "Road",
         ignored_lane_types: Optional[Set[str]] = None,
-        length: Optional[float] = None,
-        max_speed: Optional[float] = None,
+        road_properties: Optional[RoadProperties] = None
     ):
         self.road_xml = road_xml
         self.resolution = resolution
-        self.name = name
+        self.road_properties = road_properties
         
         self.ignored_lane_types = (
             set([]) if ignored_lane_types is None else ignored_lane_types
@@ -51,8 +60,6 @@ class Road:
         # need the other to reconstruct the connectivity
         self.successor_data: Tuple[Road, Optional[ConnectionPosition]] = (None, None)
         self.predecessor_data: Tuple[Road, Optional[ConnectionPosition]] = (None, None)
-        self.length = length
-        self.max_speed = max_speed
 
     @cached_property
     def traffic_orientation(self) -> TrafficOrientation:

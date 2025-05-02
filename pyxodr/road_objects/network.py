@@ -8,7 +8,7 @@ from rich.progress import track
 
 from pyxodr.road_objects.junction import Junction
 from pyxodr.road_objects.lane import ConnectionPosition
-from pyxodr.road_objects.road import Road
+from pyxodr.road_objects.road import Road, RoadProperties
 from pyxodr.utils import cached_property
 
 
@@ -151,7 +151,6 @@ class RoadNetwork:
                 max_speed = 0
                 if type_element is not None:
                     speed_element = type_element.find("speed")
-                    # name = type_element.find("name")
                     if speed_element is not None:
                         try:
                             max_speed = float(speed_element.attrib["max"])
@@ -171,14 +170,14 @@ class RoadNetwork:
                 else:
                     print("No <type> element found.")
                 
+                road_properties = RoadProperties(name=name if name else "Road", length=length, max_speed=max_speed)
+                
                 resolution = min(0.5 * length, self.resolution)
                 road = Road(
                     road_xml,
                     resolution=resolution,
-                    name=name if name else "Road",
                     ignored_lane_types=self.ignored_lane_types,
-                    length=length,
-                    max_speed=max_speed
+                    road_properties=road_properties
                 )
                 self.road_ids_to_object[road.id] = road
                 roads.append(road)
