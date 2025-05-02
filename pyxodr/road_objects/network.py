@@ -123,7 +123,7 @@ class RoadNetwork:
                 road._link_lane_sections()
             except ValueError as e:
                 print(f"WARNING: Could not link all lane sections of {road}. {e}")
-
+                
     @lru_cache(maxsize=None)
     def get_roads(
         self,
@@ -145,11 +145,40 @@ class RoadNetwork:
                 roads.append(self.road_ids_to_object[road_id])
             else:
                 length = float(road_xml.attrib["length"])
+                name = road_xml.attrib["name"]
+                type_element = road_xml.find("type")
+
+                max_speed = 0
+                if type_element is not None:
+                    speed_element = type_element.find("speed")
+                    # name = type_element.find("name")
+                    if speed_element is not None:
+                        try:
+                            max_speed = float(speed_element.attrib["max"])
+                            speed_unit = speed_element.attrib.get("unit", "mps")
+                            if speed_unit == "mph":
+                                max_speed = max_speed * 0.44704
+                            elif speed_unit == "km/h":
+                                max_speed = max_speed * 0.277778
+                            else:
+                                max_speed = max_speed
+                        except Exception:
+                            print(f"Couldn't convert...") # {speed_unit}")
+                        #   # Default to m/s if not specified
+                        print(f"Max speed: {max_speed}") # {speed_unit}")
+                    else:
+                        print("No <speed> element found.")
+                else:
+                    print("No <type> element found.")
+                
                 resolution = min(0.5 * length, self.resolution)
                 road = Road(
                     road_xml,
                     resolution=resolution,
+                    name=name if name else "Road",
                     ignored_lane_types=self.ignored_lane_types,
+                    length=length,
+                    max_speed=max_speed
                 )
                 self.road_ids_to_object[road.id] = road
                 roads.append(road)
@@ -157,6 +186,7 @@ class RoadNetwork:
         self._link_roads()
 
         return roads
+
 
     def plot(
         self,

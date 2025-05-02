@@ -33,11 +33,15 @@ class Road:
         self,
         road_xml: etree._Element,
         resolution: float = 0.1,
+        name: str = "Road",
         ignored_lane_types: Optional[Set[str]] = None,
+        length: Optional[float] = None,
+        max_speed: Optional[float] = None,
     ):
         self.road_xml = road_xml
         self.resolution = resolution
-
+        self.name = name
+        
         self.ignored_lane_types = (
             set([]) if ignored_lane_types is None else ignored_lane_types
         )
@@ -47,6 +51,8 @@ class Road:
         # need the other to reconstruct the connectivity
         self.successor_data: Tuple[Road, Optional[ConnectionPosition]] = (None, None)
         self.predecessor_data: Tuple[Road, Optional[ConnectionPosition]] = (None, None)
+        self.length = length
+        self.max_speed = max_speed
 
     @cached_property
     def traffic_orientation(self) -> TrafficOrientation:
