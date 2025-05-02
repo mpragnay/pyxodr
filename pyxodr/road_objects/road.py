@@ -38,8 +38,6 @@ class Road:
     ignored_lane_types : Set[str], optional
         A set of lane types that should not be read from the OpenDRIVE file. If
         unspecified, no types are ignored.
-    road_properties : RoadProperties, optional
-        Collection of road properties.
     """
 
     def __init__(
@@ -47,11 +45,9 @@ class Road:
         road_xml: etree._Element,
         resolution: float = 0.1,
         ignored_lane_types: Optional[Set[str]] = None,
-        road_properties: Optional[RoadProperties] = None,
     ):
         self.road_xml = road_xml
         self.resolution = resolution
-        self.road_properties = road_properties
 
         self.ignored_lane_types = (
             set([]) if ignored_lane_types is None else ignored_lane_types
@@ -566,6 +562,35 @@ class Road:
         }
 
         return _junction_connecting_ids
+
+    @cached_property
+    def road_properties(self) -> RoadProperties:
+        road_xml = self.road_xml
+        length = float(road_xml.attrib["length"])
+        name = road_xml.attrib["name"]
+        type_element = road_xml.find("type")
+
+        max_speed = None
+        if type_element is not None:
+            speed_element = type_element.find("speed")
+            if speed_element is not None:
+                try:
+                    max_speed = float(speed_element.attrib["max"])
+                    speed_unit = speed_element.attrib.get("unit", "mps")
+                    if speed_unit == "mph":
+                        max_speed = max_speed * 0.44704
+                    elif speed_unit == "km/h":
+                        max_speed = max_speed * 0.277778
+                    else:
+                        max_speed = max_speed
+                except Exception:
+                    print(f"Couldn't convert speed in {speed_unit}")
+        else:
+            print("No <type> element found.")
+
+        return RoadProperties(
+            name=name if name else "Road", length=length, max_speed=max_speed
+        )
 
     def plot(
         self,
