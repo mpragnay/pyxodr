@@ -105,7 +105,10 @@ class Road:
         return traffic_orientation
 
     def __getitem__(self, name):
-        return self.road_xml.attrib[name]
+        try:
+            return self.road_xml.attrib[name]
+        except KeyError:
+            return None
 
     def __hash__(self):
         return hash(self.id)
@@ -576,18 +579,17 @@ class Road:
     @cached_property
     def road_properties(self) -> RoadProperties:
         """Return all the existing road properties for this road."""
-        road_xml = self.road_xml
-        length = float(road_xml.attrib["length"])
-        name = road_xml.attrib["name"]
-        type_element = road_xml.find("type")
+        length = float(self["length"])
+        name = self["name"]
+        type_element = self["type"]
 
         max_speed = None
         if type_element is not None:
-            speed_element = type_element.find("speed")
+            speed_element = type_element["speed"]
             if speed_element is not None:
                 try:
-                    max_speed = float(speed_element.attrib["max"])
-                    speed_unit = speed_element.attrib.get("unit", "mps")
+                    max_speed = float(speed_element["max"])
+                    speed_unit = speed_element.get("unit", "mps")
                     if speed_unit == "mph":
                         max_speed = max_speed * 0.44704
                     elif speed_unit == "km/h":
