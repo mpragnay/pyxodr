@@ -579,13 +579,15 @@ class Road:
         length = float(self["length"])
         name = self["name"]
 
-        try:
-            speed_element = self["type"].get("speed")
-        except KeyError:
-            speed_element = None
+        type_element = self.road_xml.find("type")
+        speed_element = type_element.find("speed") if type_element is not None else None
 
-        max_speed = float(speed_element["max"]) if speed_element else None
-        speed_unit = speed_element.get("unit", "mps") if max_speed else None
+        max_speed, speed_unit = (
+            (float(speed_element.get("max")), speed_element.get("unit", "mps"))
+            if speed_element is not None
+            else (None, None)
+        )
+
         if speed_unit == "mph":
             max_speed = max_speed * 0.44704
         elif speed_unit == "km/h":
