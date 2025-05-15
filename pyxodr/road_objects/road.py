@@ -105,10 +105,7 @@ class Road:
         return traffic_orientation
 
     def __getitem__(self, name):
-        try:
-            return self.road_xml.attrib[name]
-        except KeyError:
-            return None
+        return self.road_xml.attrib[name]
 
     def __hash__(self):
         return hash(self.id)
@@ -581,25 +578,18 @@ class Road:
         """Return all the existing road properties for this road."""
         length = float(self["length"])
         name = self["name"]
-        type_element = self["type"]
 
-        max_speed = None
-        if type_element is not None:
-            speed_element = type_element["speed"]
-            if speed_element is not None:
-                try:
-                    max_speed = float(speed_element["max"])
-                    speed_unit = speed_element.get("unit", "mps")
-                    if speed_unit == "mph":
-                        max_speed = max_speed * 0.44704
-                    elif speed_unit == "km/h":
-                        max_speed = max_speed * 0.277778
-                    else:
-                        max_speed = max_speed
-                except Exception:
-                    print(f"Couldn't convert speed in {speed_unit}")
-        else:
-            print("No <type> element found.")
+        try:
+            speed_element = self["type"].get("speed")
+        except KeyError:
+            speed_element = None
+
+        max_speed = float(speed_element["max"]) if speed_element else None
+        speed_unit = speed_element.get("unit", "mps") if max_speed else None
+        if speed_unit == "mph":
+            max_speed = max_speed * 0.44704
+        elif speed_unit == "km/h":
+            max_speed = max_speed * 0.277778
 
         return RoadProperties(
             name=name if name else "Road", length=length, max_speed=max_speed
