@@ -594,7 +594,9 @@ class Road:
             max_speed = max_speed * 0.277778
 
         return RoadProperties(
-            name=name if name else "Road", length=length, max_speed=max_speed
+            name=name if name else RoadProperties.name,
+            length=length,
+            max_speed=max_speed,
         )
 
     def plot(
