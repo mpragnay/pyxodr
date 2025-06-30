@@ -26,6 +26,8 @@ class RoadNetwork:
     ignored_lane_types : Set[str], optional
         A set of lane types that should not be read from the OpenDRIVE file. If
         unspecified, no types are ignored.
+    geo_reference: str, optional
+        Geo reference specification for converting coordinates into lat/lon.
     """
 
     def __init__(
@@ -64,6 +66,14 @@ class RoadNetwork:
         for junction in self.get_junctions():
             _connecting_road_ids |= junction.get_connecting_road_ids()
         return _connecting_road_ids
+
+    @cached_property
+    def geo_reference(self) -> Optional[str]:
+        """Return the geo reference for this road network."""
+        try:
+            return self.root.find("header").find("geoReference").text
+        except AttributeError:
+            return None
 
     def _link_roads(self):
         """
