@@ -10,6 +10,7 @@ from pyxodr.road_objects.junction import Junction
 from pyxodr.road_objects.lane import ConnectionPosition
 from pyxodr.road_objects.road import Road
 from pyxodr.utils import cached_property
+import numpy as np
 
 
 class RoadNetwork:
@@ -35,6 +36,7 @@ class RoadNetwork:
         xodr_file_path: str,
         resolution: float = 0.1,
         ignored_lane_types: Optional[Set[str]] = None,
+        max_samples: float = 10000,
     ):
         self.tree = etree.parse(xodr_file_path)
         self.root = self.tree.getroot()
@@ -44,6 +46,8 @@ class RoadNetwork:
         self.ignored_lane_types = (
             set([]) if ignored_lane_types is None else ignored_lane_types
         )
+        self.max_samples = max_samples
+        self.logs_of_max_samples_hit = []
 
         self.road_ids_to_object = {}
 
@@ -160,6 +164,8 @@ class RoadNetwork:
                     road_xml,
                     resolution=resolution,
                     ignored_lane_types=self.ignored_lane_types,
+                    max_samples=self.max_samples,
+                    logs_of_max_samples_hit=self.logs_of_max_samples_hit
                 )
                 self.road_ids_to_object[road.id] = road
                 roads.append(road)
@@ -329,3 +335,22 @@ class RoadNetwork:
             [ub - lb for lb, ub in (getattr(axis, f"get_{a}lim")() for a in "xyz")]
         )
         return axis
+
+    def print_logs_max_samples_hit(self):
+        """
+        Get the logs of max samples hit for this road network.
+        Returns
+        -------
+        list[int]
+            List of original number of samples in the linspace for each max samples hit.
+        """
+        print(f'Number of sample Truncations: {len(self.logs_of_max_samples_hit)}')
+        if len(self.logs_of_max_samples_hit) == 0:
+            return
+        logs_array = np.array(self.logs_of_max_samples_hit)
+        resolutions_array = logs_array[:,0] / logs_array[:,1]
+        mean_val = np.mean(resolutions_array)
+        std_val = np.std(resolutions_array)
+        print(f'Resolution stats for truncated samples: Mean = {mean_val}, Std = {std_val}')
+        diff_array = abs(logs_array[:,1] - self.max_samples)
+        print(f'Total Difference from max_samples: {np.sum(diff_array)}')
